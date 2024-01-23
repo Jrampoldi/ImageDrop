@@ -41,14 +41,39 @@ bool Image::read(const char* filename){
 
 bool Image::write(const char* filename){
 	//write image
-	
+	ImageType type = getFileType(filename);
+	int success;
+	switch(type){
+		case PNG:
+			success = stbi_write_png(filename, w, h, channels, data, w*channels);
+			break;
+		case BMP:	
+			success = stbi_write_bmp(filename, w, h, channels, data);
+			break;
+		case JPG:
+			success = stbi_write_jpg(filename, w, h, channels, data, 100);
+		case TGA:
+			success = stbi_write_tga(filename, w, h, channels, data);
+			break;
+	}
+	return success != 0;
 }
 
 ImageType Image::getFileType(const char* filename){
 	const char* ext = strchr(filename, '.');
 	if (ext != nullptr){
 		if (strcmp(ext, ".png") == 0){
-			
+			return PNG;		
+		}
+		else if (strcmp(ext, ".bmp") == 0){
+			return BMP;		
+		}
+		else if (strcmp(ext, ".jpg") == 0){
+			return JPG;		
+		}
+		else if (strcmp(ext, ".tga") == 0){
+			return TGA;		
 		}
 	}
+	return PNG;
 }
