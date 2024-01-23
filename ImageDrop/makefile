@@ -1,10 +1,10 @@
 CC = g++
-INC = $(shell ls Inc/*.h)
+INC = -I Inc/
 SRC = $(shell ls Src/*.cpp)
 CFLAGS = -Wall -Wextra 
 
 ImageDrop: $(SRC)
-	$(CC) $(INC) -o $@ $(SRC) $(CFLAGS)
+	$(CC) $(INC) -o $@ $(SRC)
 
 .PHONY: clean
 

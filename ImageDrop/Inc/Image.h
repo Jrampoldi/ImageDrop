@@ -1,12 +1,18 @@
 #ifndef IMAGE_H_
 #define IMAGE_H_
 
+#include <stdio.h>
 #include <stdint.h>
+#include <string.h>
+#include <cstddef>
 
 
+enum ImageType{
+	PNG, JPG, BMP, TGA
+};
 
 struct Image{
-	uint8_t* imageData = NULL;
+	uint8_t* data = NULL;
 	size_t size = 0;
 	int w;
 	int h;
@@ -20,7 +26,7 @@ struct Image{
 	bool read(const char* filename);
 	bool write(const char* filename);
 
-
+	ImageType getFileType(const char* filename);
 	
 };
 
