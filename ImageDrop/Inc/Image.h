@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <cstddef>
-
+#include <cmath>
 
 enum ImageType{
 	PNG, JPG, BMP, TGA
@@ -28,6 +28,12 @@ struct Image{
 
 	ImageType getFileType(const char* filename);
 	
+	Image& grayscale_avg();
+	Image& grayscale_lum();
+
+	Image& dither();
+
+	int index(int x, int y);
 };
 
 #endif

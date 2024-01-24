@@ -77,3 +77,56 @@ ImageType Image::getFileType(const char* filename){
 	}
 	return PNG;
 }
+
+Image& Image::grayscale_avg(){
+	// r + g + b / 3
+	if (channels < 3){
+		printf("Values are less than 3, already greyscale");
+	} else {
+		for (int i = 0; i < size; i += channels){
+			int gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+			memset(data + i, gray, 3);
+		}
+	}
+	return *this;
+}
+	
+
+Image& Image::grayscale_lum(){
+		if (channels < 3){
+		printf("Values are less than 3, already greyscale");
+	} else {
+		for (int i = 0; i < size; i += channels){
+			int gray = ((0.2126*data[i]) + (0.7152*data[i + 1]) + (0.0722 * data[i + 2])) / 3;
+			memset(data + i, gray, 3);
+		}
+	}
+	return *this;
+}
+
+Image& Image::dither(){
+	//round(color * factor/ 255) * (255/factor)
+	const int FACTOR = 1;
+	for (int y = 0; y < h - 1; y++){
+		for (int x = 1; x < w - 1; x++){
+			float oldRed = data[index(x, y)];
+			float oldGreen = data[index(x, y) + 1];
+			float oldBlue = data[index(x, y) + 2];
+
+			oldRed = (round((FACTOR * oldRed) / 255) * (255/FACTOR));
+			oldGreen = (round((FACTOR * oldGreen) / 255) * (255/FACTOR));
+			oldBlue = (round((FACTOR * oldBlue) / 255) * (255/FACTOR));
+		
+
+			data[index(x, y)] = oldRed;
+			data[index(x, y) + 1] = oldGreen;
+			data[index(x, y) + 2] = oldBlue;
+		}
+	}
+	printf("Size: %lu",size);
+	return *this;
+}
+
+int Image::index(int x, int y){
+	return (x + (y * (w/channels)));
+}
