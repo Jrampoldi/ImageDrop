@@ -151,7 +151,7 @@ void Image::averageGroupOfPixels(int resolution){
 	//yFactor away, average all values, and set pixel
 	//equal to values.
 	
-	for (int pixel = 0; pixel < (size); pixel += channels){
+	for (int pixel = 0; pixel < (size); pixel += (channels*resolution)){
 
 		float avgR = 0;
 		float avgG = 0;
@@ -165,16 +165,24 @@ void Image::averageGroupOfPixels(int resolution){
 				avgB += data[pixel + index(x,y) + 2];
 			}
 		}
-		data[pixel] = (avgR / 3.0);
-		data[pixel] = (avgG / 3.0);
-		data[pixel] = (avgB / 3.0);
-		checkPercentage(pixel);
+		avgR = (avgR / 3.0);
+		avgG = (avgG / 3.0);
+		avgB = (avgB / 3.0);
+		for(int y = -(resolution/2); y < (resolution / 2); y++){
+			for(int x = -(resolution/2); x < (resolution / 2); x++){
+				if ((pixel + index(x,y) + 2) > size){ continue; }
+				data[pixel + index(x,y)] = avgR;
+				data[pixel + index(x,y) + 1] = avgG;
+				data[pixel + index(x,y) + 2] = avgB;		
+			}
+		}
+
 	}
+		
 }
 int Image::index(int x, int y){
 	return (channels*(x + (y * w)));
 }
 
 void Image::checkPercentage(int loadValue){
-	if (loadValue / size )
 }
