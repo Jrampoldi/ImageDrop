@@ -10,9 +10,8 @@ Image::Image(const char* filename){
 	//constructor
 	if(read(filename)) {
 		printf("Read %s\n", filename);
-		size = w * h * channels;	
-}
-	else {
+		size = w * h * channels;		
+	} else {
 		printf("Could not read %s\n", filename);
 	}
 }
@@ -106,27 +105,76 @@ Image& Image::grayscale_lum(){
 
 Image& Image::dither(){
 	//round(color * factor/ 255) * (255/factor)
-	const int FACTOR = 1;
+	const float FACTOR = 1.0;
 	for (int y = 0; y < h - 1; y++){
 		for (int x = 1; x < w - 1; x++){
 			float oldRed = data[index(x, y)];
 			float oldGreen = data[index(x, y) + 1];
 			float oldBlue = data[index(x, y) + 2];
 
-			oldRed = (round((FACTOR * oldRed) / 255) * (255/FACTOR));
-			oldGreen = (round((FACTOR * oldGreen) / 255) * (255/FACTOR));
-			oldBlue = (round((FACTOR * oldBlue) / 255) * (255/FACTOR));
+			float newRed = (round((FACTOR * oldRed) / 255) * (255 / FACTOR));
+			float newGreen = (round((FACTOR * oldGreen) / 255) * (255 / FACTOR));
+			float newBlue = (round((FACTOR * oldBlue) / 255) * (255 / FACTOR));
 		
+			float quantErrorR = oldRed - newRed;
+			float quantErrorG = oldGreen - newGreen;
+			float quantErrorB = oldBlue - newBlue;
 
-			data[index(x, y)] = oldRed;
-			data[index(x, y) + 1] = oldGreen;
-			data[index(x, y) + 2] = oldBlue;
+			data[index(x, y)] = newRed;
+			data[index(x, y) + 1] = newGreen;
+			data[index(x, y) + 2] = newBlue;			
+
+			data[index(x + 1, y)] += quantErrorR * (1/16.0);
+			data[index(x + 1, y) + 1] += quantErrorG * (1/16.0);
+			data[index(x + 1, y) + 2] += quantErrorB * (1/16.0);
+		
+			data[index(x - 1, y + 1)] += quantErrorR * (1/16.0);
+			data[index(x - 1, y + 1) + 1] += quantErrorG * (1/16.0);
+			data[index(x - 1, y + 1) + 2] += quantErrorB * (1/16.0);
+			
+
+			data[index(x, y + 1)] += quantErrorR * (1/16.0);
+			data[index(x, y + 1) + 1] += quantErrorG * (1/16.0);
+			data[index(x, y + 1) + 2] += quantErrorB * (1/16.0);
+
+
+			data[index(x + 1, y + 1)] += quantErrorR * (1/16.0);
+			data[index(x + 1, y + 1) + 1] += quantErrorG * (1/16.0);
+			data[index(x + 1, y + 1) + 2] += quantErrorB * (1/16.0);
 		}
 	}
-	printf("Size: %lu",size);
 	return *this;
 }
 
+void Image::averageGroupOfPixels(int resolution){
+	//loop through each pixel and take xFactor and
+	//yFactor away, average all values, and set pixel
+	//equal to values.
+	
+	for (int pixel = 0; pixel < (size); pixel += channels){
+
+		float avgR = 0;
+		float avgG = 0;
+		float avgB = 0;
+		
+		for(int y = -(resolution/2); y < (resolution / 2); y++){
+			for(int x = -(resolution/2); x < (resolution / 2); x++){
+				if ((pixel + index(x,y) + 2) > size){ continue; }
+				avgR += data[pixel + index(x,y)];
+				avgG +=	data[pixel + index(x,y) + 1];
+				avgB += data[pixel + index(x,y) + 2];
+			}
+		}
+		data[pixel] = (avgR / 3.0);
+		data[pixel] = (avgG / 3.0);
+		data[pixel] = (avgB / 3.0);
+		checkPercentage(pixel);
+	}
+}
 int Image::index(int x, int y){
-	return (x + (y * (w/channels)));
+	return (channels*(x + (y * w)));
+}
+
+void Image::checkPercentage(int loadValue){
+	if (loadValue / size )
 }

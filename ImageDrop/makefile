@@ -9,4 +9,4 @@ ImageDrop: $(SRC)
 .PHONY: clean
 
 clean:
-	rm ImageDrop
+	rm ImageDrop *.png *.jpg

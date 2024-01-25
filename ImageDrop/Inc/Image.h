@@ -13,6 +13,7 @@ enum ImageType{
 
 struct Image{
 	uint8_t* data = NULL;
+	uint8_t* pixels = NULL;
 	size_t size = 0;
 	int w;
 	int h;
@@ -33,6 +34,8 @@ struct Image{
 
 	Image& dither();
 
+	void averageGroupOfPixels(int threshold);
+	void checkPercentage(int loadValue);
 	int index(int x, int y);
 };
 
