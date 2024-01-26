@@ -146,39 +146,40 @@ Image& Image::dither(){
 	return *this;
 }
 
-void Image::averageGroupOfPixels(int resolution){
-	//loop through each pixel and take xFactor and
-	//yFactor away, average all values, and set pixel
-	//equal to values.
-	
-	for (int pixel = 0; pixel < (size); pixel += (channels*resolution)){
+Image& Image::averageGroupOfPixels(int resolution){
+	int FACTOR = 1;
+	for (int y = (resolution/2); y<h; y+=resolution){
+		for (int x = (resolution/2); x<w; x+=resolution){
+			
+			float avgR = 0;
+			float avgG = 0;
+			float avgB = 0;
+			
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if ((index(c_x,c_y) + 2) > size){continue;}
+					avgR += data[index(c_x, c_y)]; 
+					avgG += data[index(c_x, c_y) + 1];
+					avgB +=	data[index(c_x, c_y) + 2];				
+				}
+			}
+			
+			avgR = (avgR / (resolution * resolution));
+			avgG = (avgG / (resolution * resolution));
+			avgB = (avgB / (resolution * resolution));
 
-		float avgR = 0;
-		float avgG = 0;
-		float avgB = 0;
-		
-		for(int y = -(resolution/2); y < (resolution / 2); y++){
-			for(int x = -(resolution/2); x < (resolution / 2); x++){
-				if ((pixel + index(x,y) + 2) > size){ continue; }
-				avgR += data[pixel + index(x,y)];
-				avgG +=	data[pixel + index(x,y) + 1];
-				avgB += data[pixel + index(x,y) + 2];
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if ((index(c_x,c_y) + 2) > size){continue;}
+					data[index(c_x, c_y)] = (round((FACTOR * avgR) / 255) * (255 / FACTOR));
+					data[index(c_x, c_y) + 1] = (round((FACTOR * avgG) / 255) * (255 / FACTOR));
+					data[index(c_x, c_y) + 2] = (round((FACTOR * avgB) / 255) * (255 / FACTOR));
+				}
 			}
 		}
-		avgR = (avgR / 3.0);
-		avgG = (avgG / 3.0);
-		avgB = (avgB / 3.0);
-		for(int y = -(resolution/2); y < (resolution / 2); y++){
-			for(int x = -(resolution/2); x < (resolution / 2); x++){
-				if ((pixel + index(x,y) + 2) > size){ continue; }
-				data[pixel + index(x,y)] = avgR;
-				data[pixel + index(x,y) + 1] = avgG;
-				data[pixel + index(x,y) + 2] = avgB;		
-			}
-		}
-
 	}
-		
+	printf("Picture averaged.\n");
+	return *this;
 }
 int Image::index(int x, int y){
 	return (channels*(x + (y * w)));

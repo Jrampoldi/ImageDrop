@@ -34,7 +34,7 @@ struct Image{
 
 	Image& dither();
 
-	void averageGroupOfPixels(int threshold);
+	Image& averageGroupOfPixels(int threshold);
 	void checkPercentage(int loadValue);
 	int index(int x, int y);
 };

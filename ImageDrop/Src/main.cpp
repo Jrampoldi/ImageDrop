@@ -3,12 +3,15 @@
 using namespace std;
 
 int main(int argc, char* argz[]){
-	Image test("SampleImages/Lion.jpg");
+	Image test("SampleImages/cat.jpg");
 	
-	Image dither_img(test);
-	dither_img.dither();
-	dither_img.averageGroupOfPixels(64);	
-	dither_img.write("dithered.jpg");
+	Image img_out(test);
+
+	img_out.averageGroupOfPixels(2);		
+	img_out.averageGroupOfPixels(4);
+	img_out.averageGroupOfPixels(8);
+
+	img_out.write("dithered.jpg");
 	return 0;
 }
 
