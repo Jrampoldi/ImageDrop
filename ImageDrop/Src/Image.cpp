@@ -35,6 +35,7 @@ Image::~Image(){
 bool Image::read(const char* filename){
 	//read
 	data = stbi_load(filename, &w, &h, &channels, 0);
+	fileRead = (data != NULL);
 	return data != NULL;
 }
 
@@ -185,5 +186,108 @@ int Image::index(int x, int y){
 	return (channels*(x + (y * w)));
 }
 
-void Image::checkPercentage(int loadValue){
+Image& Image::halftone(int resolution){
+	
+
+	for (int y = (resolution/2); y<h; y+=resolution){
+		for (int x = (resolution/2); x<w; x+=resolution){
+			
+			float avgR = 0;
+			float avgG = 0;
+			float avgB = 0;
+			
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if ((index(c_x,c_y) + 2) > size){continue;}
+					avgR += data[index(c_x, c_y)]; 
+					avgG += data[index(c_x, c_y) + 1];
+					avgB +=	data[index(c_x, c_y) + 2];				
+				}
+			}
+			
+			avgR = (avgR / (resolution * resolution));
+			avgG = (avgG / (resolution * resolution));
+			avgB = (avgB / (resolution * resolution));
+
+			int greyValue = (avgR + avgG + avgB) / 3;
+			int radius = ((int)((greyValue/255.0) * (float)resolution)) % resolution;
+
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if  (isInCircle(c_x, x, c_y, y, radius)){
+						data[index(c_x, c_y)] =  avgR;
+						data[index(c_x, c_y) + 1] = avgG;
+						data[index(c_x, c_y) + 2] = avgB;
+					} else {
+						data[index(c_x, c_y)] = 0;
+						data[index(c_x, c_y) + 1] = 0;
+						data[index(c_x, c_y) + 2] = 0;
+					}
+				}
+			}
+		}
+	}
+
+	return *this;
+}
+
+void Image::convertToCYMK(int resolution){
+		
+	for(int y = (resolution/2); y<h; y+=resolution){	
+		for(int x = (resolution/2); x<x; x+=resolution){
+
+			float avgR = 0;
+			float avgG = 0;
+			float avgB = 0;
+
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					avgR += data[index(c_x, c_y)]; 
+					avgG += data[index(c_x, c_y) + 1];
+					avgB +=	data[index(c_x, c_y) + 2];
+				}
+			}
+
+			avgR = avgR/3.0;
+			avgG = avgG/3.0;
+			avgB = avgB/3.0;
+
+			float red = avgR / 255.0;
+			float green = avgG / 255.0;
+			float blue = avgB / 255.0;
+
+			float key = 1.0 - std::max(std::max(red,green), blue);
+
+			if (key < 1.0 - 1e-6){
+
+				float cyan = (1.0 - red - key) / (1.0 - key);
+				float magenta = (1.0 - green - key) / (1.0 - key);
+				float yellow = (1.0 - blue - key) / (1.0 - key);
+
+				cyan *= 100.0;
+				magenta *= 100.0;
+				yellow *= 100.0;
+				key *= 100.0;
+
+			} else {
+				/* Avoiding division by zero */
+				cyan = 0.0;
+				magenta = 0.0;
+				yellow = 0.0;
+				key = 100.0;
+			}
+			
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					
+				}
+			}
+		}
+	}
+}
+
+
+bool Image::isInCircle(int x1, int x2, int y1, int y2, int radius){
+	return ( radius >= sqrt(pow(x2 - x1, 2) + pow(y2-y1, 2)));
+
 }

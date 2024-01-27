@@ -3,15 +3,14 @@
 using namespace std;
 
 int main(int argc, char* argz[]){
-	Image test("SampleImages/cat.jpg");
+	Image img_out(argz[1]);
 	
-	Image img_out(test);
+	if (img_out.fileRead){
+		img_out.convertToCYMK();
+		img_out.halftone(32);	
+	}
 
-	img_out.averageGroupOfPixels(2);		
-	img_out.averageGroupOfPixels(4);
-	img_out.averageGroupOfPixels(8);
-
-	img_out.write("dithered.jpg");
+	img_out.write("halftone.jpg");
 	return 0;
 }
 
