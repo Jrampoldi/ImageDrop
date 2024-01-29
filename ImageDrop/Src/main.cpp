@@ -18,11 +18,11 @@ int main(int argc, char* argz[]){
 		cyan.cyanHalftoneIntensity(16);
 		img.convertToCMYKHalftone(cyan, magenta, yellow, key);
 
-		key.write("key_values.jpg");
-		yellow.write("yellow_values.jpg");
-		cyan.write("cyan_values.jpg");
-		magenta.write("magenta_values.jpg");
-		img.write("Final_IMG.jpg");
+		key.write("key_values.png");
+		yellow.write("yellow_values.png");
+		cyan.write("cyan_values.png");
+		magenta.write("magenta_values.png");
+		img.write("Final_IMG.png");
 	}
 	return 0;
 }

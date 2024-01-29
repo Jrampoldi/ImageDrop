@@ -19,8 +19,8 @@ struct Image{
 	int channels;
 	bool fileRead = false;
 
-	float WHITE_SPACE_MULTIPLIER = 0.95;
-	int CMYK_THRESHOLD = 20;
+	const float WHITE_SPACE_MULTIPLIER = 1;
+	const int CMYK_THRESHOLD = 0;
 	int CYAN[3] = {0, 255, 255};
 	int MAGENTA[3] = {255, 0, 255};
 	int YELLOW[3] = {255, 255, 0};
@@ -38,7 +38,7 @@ struct Image{
 	
 	Image& grayscale_avg();
 	Image& grayscale_lum();
-	Image& dither();
+Image& dither();
 	Image& averageGroupOfPixels(int threshold);
 	Image& halftone(int dotSize);
 	Image& cyanHalftoneIntensity(int resolution);
