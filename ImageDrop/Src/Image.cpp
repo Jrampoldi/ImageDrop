@@ -186,6 +186,261 @@ int Image::index(int x, int y){
 	return (channels*(x + (y * w)));
 }
 
+Image& Image::cyanHalftoneIntensity(int resolution){
+	for (int y = (resolution/2); y<h; y+=(resolution)){
+		for (int x = (resolution/2); x<w; x+=(resolution)){
+			
+			float avgR = 0;
+			float avgG = 0;
+			float avgB = 0;
+			
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if ((index(c_x,c_y) + 2) > size){continue;}
+					avgR += data[index(c_x, c_y)]; 
+					avgG += data[index(c_x, c_y) + 1];
+					avgB +=	data[index(c_x, c_y) + 2];				
+				}
+			}
+			
+			avgR = (avgR / (resolution * resolution));
+			avgG = (avgG / (resolution * resolution));
+			avgB = (avgB / (resolution * resolution));
+
+			float red = avgR / 255.0;
+			float green = avgG / 255.0;
+			float blue = avgB / 255.0;
+
+			float key = 1.0 - std::max(std::max(red,green), blue);
+
+			float cyan = 0;
+
+
+			if (key < 1.0 - 1e-6){
+
+				cyan = (1.0 - red - key) / (1.0 - key);
+				cyan *= 100.0;
+
+			} else {
+				/* Avoiding division by zero */
+				cyan = 0.0;
+			}
+
+			if (cyan < CMYK_THRESHOLD){cyan = 0;}
+
+			int radius = ((int)((cyan/100.0) * (float)resolution)) % resolution;
+
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if (index(c_x, c_y) > size){continue;}
+					if  (isInCircle(c_x, (x + 1), c_y, y, (radius * WHITE_SPACE_MULTIPLIER))){
+						data[index(c_x, c_y)] =  CYAN[0];
+						data[index(c_x, c_y) + 1] = CYAN[1];
+						data[index(c_x, c_y) + 2] = CYAN[2];
+					} else {
+						data[index(c_x, c_y)] = 255;
+						data[index(c_x, c_y) + 1] = 255;
+						data[index(c_x, c_y) + 2] = 255;
+					}
+				}
+			}
+		}
+	}
+	return *this;
+}
+
+Image& Image::magentaHalftoneIntensity(int resolution){
+	for (int y = (resolution/2); y<h; y+=resolution){
+		for (int x = (resolution/2); x<w; x+=resolution){
+			
+			float avgR = 0;
+			float avgG = 0;
+			float avgB = 0;
+			
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if ((index(c_x,c_y) + 2) > size){continue;}
+					avgR += data[index(c_x, c_y)]; 
+					avgG += data[index(c_x, c_y) + 1];
+					avgB +=	data[index(c_x, c_y) + 2];				
+				}
+			}
+			
+			avgR = (avgR / (resolution * resolution));
+			avgG = (avgG / (resolution * resolution));
+			avgB = (avgB / (resolution * resolution));
+
+			float red = avgR / 255.0;
+			float green = avgG / 255.0;
+			float blue = avgB / 255.0;
+
+			float key = 1.0 - std::max(std::max(red,green), blue);
+
+
+			float magenta = 0;
+
+			if ((key < 1.0 - 1e-6)){
+
+				magenta = (1.0 - green - key) / (1.0 - key);
+				magenta *= 100.0;
+
+			} else {
+				/* Avoiding division by zero */
+				magenta = 0.0;
+			}		
+
+			if (magenta < CMYK_THRESHOLD){magenta = 0.0;}
+
+			int radius = ((int)((magenta/100.0) * (float)resolution)) % resolution;
+
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if (index(c_x, c_y) > size){continue;}				
+					if  (isInCircle(c_x, x, c_y, (y + 1), (radius * WHITE_SPACE_MULTIPLIER))){
+						data[index(c_x, c_y)] =  MAGENTA[0];
+						data[index(c_x, c_y) + 1] = MAGENTA[1];
+						data[index(c_x, c_y) + 2] = MAGENTA[2];
+					} else {
+						data[index(c_x, c_y)] = 255;
+						data[index(c_x, c_y) + 1] = 255;
+						data[index(c_x, c_y) + 2] = 255;
+					}
+				}
+			}
+		}
+	}
+	return *this;
+}
+
+Image& Image::yellowHalftoneIntensity(int resolution){
+
+	for (int y = (resolution/2); y<h; y+=(resolution)){
+		for (int x = (resolution/2); x<w; x+=(resolution)){
+			
+			float avgR = 0;
+			float avgG = 0;
+			float avgB = 0;
+			
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if ((index(c_x,c_y) + 2) > size){continue;}
+					avgR += data[index(c_x, c_y)]; 
+					avgG += data[index(c_x, c_y) + 1];
+					avgB +=	data[index(c_x, c_y) + 2];				
+				}
+			}
+			
+			avgR = (avgR / (resolution * resolution));
+			avgG = (avgG / (resolution * resolution));
+			avgB = (avgB / (resolution * resolution));
+
+			float red = avgR / 255.0;
+			float green = avgG / 255.0;
+			float blue = avgB / 255.0;
+
+			float key = 1.0 - std::max(std::max(red,green), blue);
+			float yellow = 0;
+
+
+			if ((key < 1.0 - 1e-6)){
+				yellow = (1.0 - blue - key) / (1.0 - key);
+				yellow *= 100.0;
+
+			} else {
+				/* Avoiding division by zero */
+				yellow = 0.0;
+			}
+		
+			/*Filter lower values out*/
+			if (yellow < CMYK_THRESHOLD){yellow = 0;}
+
+			int radius = ((int)((yellow/100.0) * (float)resolution)) % resolution;
+
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if (index(c_x, c_y) > size){continue;}
+					if  (isInCircle(c_x, (x + 1), c_y, (y + 1), (radius * WHITE_SPACE_MULTIPLIER))){
+						data[index(c_x, c_y)] =  YELLOW[0];
+						data[index(c_x, c_y) + 1] = YELLOW[1];
+						data[index(c_x, c_y) + 2] = YELLOW[2];
+					} else {
+						data[index(c_x, c_y)] = 255;
+						data[index(c_x, c_y) + 1] = 255;
+						data[index(c_x, c_y) + 2] = 255;
+					}
+				}
+			}
+		}
+	}
+	return *this;
+}
+
+Image& Image::keyHalftoneIntensity(int resolution){
+	for (int y = (resolution/2); y<h; y+=resolution){
+		for (int x = (resolution/2); x<w; x+=resolution){
+			
+			float avgR = 0;
+			float avgG = 0;
+			float avgB = 0;
+			
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if ((index(c_x,c_y) + 2) > size){continue;}
+					avgR += data[index(c_x, c_y)]; 
+					avgG += data[index(c_x, c_y) + 1];
+					avgB +=	data[index(c_x, c_y) + 2];				
+				}
+			}
+			
+			avgR = (avgR / (resolution * resolution));
+			avgG = (avgG / (resolution * resolution));
+			avgB = (avgB / (resolution * resolution));
+
+			float red = avgR / 255.0;
+			float green = avgG / 255.0;
+			float blue = avgB / 255.0;
+
+			float key = 1.0 - std::max(std::max(red,green), blue);
+
+			key *= 100.0;
+
+			if (key < CMYK_THRESHOLD){key = 0;}
+
+			int radius = ((int)((key/100.0) * (float)resolution)) % resolution;
+
+			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
+				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
+					if  (isInCircle(c_x, x, c_y, y, (radius * WHITE_SPACE_MULTIPLIER))){
+						data[index(c_x, c_y)] =  BLACK[0];
+						data[index(c_x, c_y) + 1] = BLACK[1];
+						data[index(c_x, c_y) + 2] = BLACK[2];
+					} else {
+						data[index(c_x, c_y)] = 255;
+						data[index(c_x, c_y) + 1] = 255;
+						data[index(c_x, c_y) + 2] = 255;
+					}
+				}
+			}
+		}
+	}
+	return *this;
+}
+Image& Image::convertToCMYKHalftone(const Image& cyan, const Image& magenta,
+									const Image& yellow, const Image& key){
+	for (int pixel = 0;pixel < size; pixel += channels){
+		if (key.data[pixel] != 255){
+			data[pixel] = BLACK[0];
+			data[pixel + 1] = BLACK[1];
+			data[pixel + 2] = BLACK[2];
+		} else {
+			data[pixel] = ((cyan.data[pixel] + magenta.data[pixel] + yellow.data[pixel]) / 3);
+			data[pixel + 1] = ((cyan.data[pixel + 1] + magenta.data[pixel + 1] + yellow.data[pixel + 1]) / 3);	
+			data[pixel + 2] = ((cyan.data[pixel + 2] + magenta.data[pixel + 2] + yellow.data[pixel + 2]) / 3);
+		}
+	}
+	return *this;
+}
+
 Image& Image::halftone(int resolution){
 	
 
@@ -209,7 +464,9 @@ Image& Image::halftone(int resolution){
 			avgG = (avgG / (resolution * resolution));
 			avgB = (avgB / (resolution * resolution));
 
+
 			int greyValue = (avgR + avgG + avgB) / 3;
+
 			int radius = ((int)((greyValue/255.0) * (float)resolution)) % resolution;
 
 			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
@@ -231,11 +488,9 @@ Image& Image::halftone(int resolution){
 	return *this;
 }
 
-void Image::convertToCYMK(int resolution){
-		
+Image& Image::convertToCYMK(int resolution){
 	for(int y = (resolution/2); y<h; y+=resolution){	
-		for(int x = (resolution/2); x<x; x+=resolution){
-
+		for(int x = (resolution/2); x<w; x+=resolution){
 			float avgR = 0;
 			float avgG = 0;
 			float avgB = 0;
@@ -258,11 +513,16 @@ void Image::convertToCYMK(int resolution){
 
 			float key = 1.0 - std::max(std::max(red,green), blue);
 
+			float cyan = 0;
+			float magenta = 0;
+			float yellow = 0;
+
+
 			if (key < 1.0 - 1e-6){
 
-				float cyan = (1.0 - red - key) / (1.0 - key);
-				float magenta = (1.0 - green - key) / (1.0 - key);
-				float yellow = (1.0 - blue - key) / (1.0 - key);
+				cyan = (1.0 - red - key) / (1.0 - key);
+				magenta = (1.0 - green - key) / (1.0 - key);
+				yellow = (1.0 - blue - key) / (1.0 - key);
 
 				cyan *= 100.0;
 				magenta *= 100.0;
@@ -277,17 +537,39 @@ void Image::convertToCYMK(int resolution){
 				key = 100.0;
 			}
 			
+
+			float max_color = std::max(std::max(std::max(cyan, magenta), yellow), key);	
+
 			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
 				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
-					
+					if (cyan == max_color){
+						data[index(c_x, c_y)] = CYAN[0];
+						data[index(c_x, c_y) + 1] = CYAN[1];
+						data[index(c_x, c_y) + 2] = CYAN[2];
+					} else if (magenta == max_color) {
+							data[index(c_x, c_y)] = MAGENTA[0];
+						data[index(c_x, c_y) + 1] = MAGENTA[1];
+						data[index(c_x, c_y) + 2] = MAGENTA[2];				
+					} else if(yellow == max_color) {
+							data[index(c_x, c_y)] = YELLOW[0];
+						data[index(c_x, c_y) + 1] = YELLOW[1];
+						data[index(c_x, c_y) + 2] = YELLOW[2];				
+					} else {
+						data[index(c_x, c_y)] = BLACK[0];
+						data[index(c_x, c_y) + 1] = BLACK[1];
+						data[index(c_x, c_y) + 2] = BLACK[2];				
+					}
+		
 				}
-			}
+			}		
+					
 		}
 	}
+	return *this;
 }
 
 
-bool Image::isInCircle(int x1, int x2, int y1, int y2, int radius){
+bool Image::isInCircle(int x1, int x2, int y1, int y2, float radius){
 	return ( radius >= sqrt(pow(x2 - x1, 2) + pow(y2-y1, 2)));
 
 }
