@@ -1,26 +1,19 @@
 import kivy
 from kivy.app import App
-from kivy.properties import ObjectProperty
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.lang import Builder
+from screenConfig import *
 
-class MainWindow(Screen):
-    pass
+class ShowScreen(ScreenManager):
 
-class SeeImage(Screen):
-    pass
+    #start app tree
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.add_widget(MainWindow(name="main_window"))
 
-class WindowManager(ScreenManager):
-    pass
 
-kv = Builder.load_file("my.kv")
 
 class MyApp(App):
     def build(self):
-        self.title = "ImageDrop"
-        return kv 
+        self.title = "ImageDrop" 
+        return ShowScreen() 
 
-
-if __name__ == "__main__":
-    MyApp().run()
