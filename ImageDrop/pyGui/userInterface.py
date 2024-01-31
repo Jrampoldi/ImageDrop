@@ -9,11 +9,12 @@ class ShowScreen(ScreenManager):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.add_widget(MainWindow(name="main_window"))
-
+        self.add_widget(ResultsWindow(name="show_results"))
 
 
 class MyApp(App):
     def build(self):
         self.title = "ImageDrop" 
+        self.orientation = "vertical"
         return ShowScreen() 
 

@@ -16,6 +16,7 @@ class MainWindow(Screen):
     #build main page 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.file_path = ""
         self.add_widget(self.configureLabel())
         self.add_widget(self.configureButtonOne())
         self.add_widget(self.configureButtonTwo())
@@ -48,7 +49,7 @@ class MainWindow(Screen):
             size_hint=(1, 1), 
         )
         with self.lbl.canvas.before:
-            Color(113/255, 113/255, 154/255, mode="rgba")
+            Color(25/255, 25/255, 25/255, mode="rgba")
             self.lbl.rect = Rectangle(size=self.lbl.size, pos=self.lbl.pos)
 
         #correct the size of rect
@@ -89,3 +90,62 @@ class MainWindow(Screen):
             lib.processImage.argtypes = [ctypes.c_char_p]
             lib.processImage.restype = None
             lib.processImage(self.file_path.encode())
+            self.manager.current = "show_results"
+
+class ResultsWindow(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.add_widget(self.generateCyanImage())
+        self.add_widget(self.generateYellowImage())
+        self.add_widget(self.generateMagentaImage())
+        self.add_widget(self.generateKeyImage())
+        self.add_widget(self.generateFinalImage())        
+
+    def on_enter(self):
+        self.cyanImg.source = "cyan_values.png"
+        self.yellowImg.source = "yellow_values.png"
+        self.magentaImg.source = "magenta_values.png"
+        self.keyImg.source = "key_values.png"
+        self.finalImg.source = "Final_IMG.png"
+
+    def generateCyanImage(self):
+        self.cyanImg = Image(
+            size_hint = (0.25, 0.45),
+            pos_hint = {"top": 1, "left": 1},
+        )
+    
+        return self.cyanImg
+
+    def generateYellowImage(self):
+        self.yellowImg = Image(
+            size_hint = (0.25, 0.45),
+            pos_hint={"top":1, "right":1 },
+        )
+        
+        return self.yellowImg
+
+    def generateMagentaImage(self):
+        self.magentaImg = Image(
+            size_hint = (0.25, 0.45),
+            pos_hint = {"left":1 , "top":0.55},
+        )
+
+        return self.magentaImg
+
+    def generateKeyImage(self):
+        self.keyImg = Image(
+            size_hint = (0.25, 0.45),
+            pos_hint = {"right":1, "top": 0.55},
+        )
+
+        return self.keyImg
+
+    def generateFinalImage(self):
+        self.finalImg = Image(
+            size_hint = (0.5, 0.9),
+            pos_hint = {"x": 0.25, "top": 1}
+        )
+
+        return self.finalImg
+
+

@@ -11,4 +11,4 @@ ImageDrop: $(SRC)
 .PHONY: clean
 
 clean:
-	rm ImageDrop.so *.png *.jpg
+	rm pyGui/ImageDrop.so pyGui/*.png pyGui/*.jpg
