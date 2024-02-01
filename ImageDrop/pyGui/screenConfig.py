@@ -19,6 +19,7 @@ class MainWindow(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.file_path = ""
+        self.calls = 0
 
     def on_enter(self):
         self.add_widget(self.configureLabel())
@@ -26,9 +27,9 @@ class MainWindow(Screen):
         self.add_widget(self.configureButtonTwo())
         
     def on_leave(self):
-        self.file_path = ""
         self.remove_widget(self.img)
         self.remove_widget(self.file_chooser)
+        self.calls += 1
 
     def configureButtonOne(self):
         self.btn = Button(
@@ -95,9 +96,9 @@ class MainWindow(Screen):
         if self.file_path == "":
             pass
         else:
-            lib.processImage.argtypes = [ctypes.c_char_p]
+            lib.processImage.argtypes = [ctypes.c_int, ctypes.c_char_p]
             lib.processImage.restype = None
-            lib.processImage(self.file_path.encode())
+            lib.processImage(self.calls, self.file_path.encode())
             self.manager.current = "show_results"
 
 class ResultsWindow(Screen):
@@ -114,15 +115,13 @@ class ResultsWindow(Screen):
         self.add_widget(self.configureBackButton())
         self.add_widget(self.configureSaveButton())
         
-        self.cyanImg.source = "cyan_values.png"
-        self.yellowImg.source = "yellow_values.png"
-        self.magentaImg.source = "magenta_values.png"
-        self.keyImg.source = "key_values.png"
-        self.finalImg.source = "Final_IMG.png"
+        self.cyanImg.source = f"cyan_values{self.calls}.png"
+        self.yellowImg.source = f"yellow_values{self.calls}.png"
+        self.magentaImg.source = f"magenta_values{self.calls}.png"
+        self.keyImg.source = f"key_values{self.calls}.png"
+        self.finalImg.source = f"Final_IMG{self.calls}.png"
 
-        if self.calls > 0:
-            self.add_widget(self.configureRefresh())
-
+            
     def on_leave(self):
         self.remove_widget(self.cyanImg)
         self.remove_widget(self.yellowImg)
@@ -132,6 +131,7 @@ class ResultsWindow(Screen):
         self.remove_widget(self.backBtn)
         self.remove_widget(self.saveBtn)
         self.calls += 1
+
 
     def generateCyanImage(self):
         self.cyanImg = Image(
@@ -192,24 +192,6 @@ class ResultsWindow(Screen):
         
         return self.saveBtn
 
-    def configureRefresh(self):
-        self.refreshBtn = Button(
-            text="Refresh",
-            size_hint=(0.5, 0.1),
-            pos_hint={"x":0.25 , "bottom":1 },
-            on_release = self.refreshImages
-        )
-
-        return self.refreshBtn
-
-    def refreshImages(self, instance):
-        self.cyanImg.source = "cyan_values.png"
-        self.yellowImg.source = "yellow_values.png"
-        self.magentaImg.source = "magenta_values.png"
-        self.keyImg.source = "key_values.png"
-        self.finalImg.source = "Final_IMG.png"
-
-      
 
     def chooseAnotherImage(self, instance):
         self.manager.current = "main_window"
