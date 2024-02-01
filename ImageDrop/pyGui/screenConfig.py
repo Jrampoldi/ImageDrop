@@ -8,6 +8,8 @@ from kivy.uix.button import Button
 from kivy.graphics import Color, Rectangle
 from kivy.uix.image import Image
 from kivy.uix.filechooser import FileChooserIconView
+from kivy.clock import Clock
+
 
 lib = ctypes.CDLL("./ImageDrop.so")
 
@@ -17,10 +19,16 @@ class MainWindow(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.file_path = ""
+
+    def on_enter(self):
         self.add_widget(self.configureLabel())
         self.add_widget(self.configureButtonOne())
         self.add_widget(self.configureButtonTwo())
         
+    def on_leave(self):
+        self.file_path = ""
+        self.remove_widget(self.img)
+        self.remove_widget(self.file_chooser)
 
     def configureButtonOne(self):
         self.btn = Button(
@@ -95,18 +103,35 @@ class MainWindow(Screen):
 class ResultsWindow(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.calls = 0
+
+    def on_enter(self):
         self.add_widget(self.generateCyanImage())
         self.add_widget(self.generateYellowImage())
         self.add_widget(self.generateMagentaImage())
         self.add_widget(self.generateKeyImage())
         self.add_widget(self.generateFinalImage())        
-
-    def on_enter(self):
+        self.add_widget(self.configureBackButton())
+        self.add_widget(self.configureSaveButton())
+        
         self.cyanImg.source = "cyan_values.png"
         self.yellowImg.source = "yellow_values.png"
         self.magentaImg.source = "magenta_values.png"
         self.keyImg.source = "key_values.png"
         self.finalImg.source = "Final_IMG.png"
+
+        if self.calls > 0:
+            self.add_widget(self.configureRefresh())
+
+    def on_leave(self):
+        self.remove_widget(self.cyanImg)
+        self.remove_widget(self.yellowImg)
+        self.remove_widget(self.magentaImg)
+        self.remove_widget(self.keyImg)
+        self.remove_widget(self.finalImg)
+        self.remove_widget(self.backBtn)
+        self.remove_widget(self.saveBtn)
+        self.calls += 1
 
     def generateCyanImage(self):
         self.cyanImg = Image(
@@ -148,4 +173,44 @@ class ResultsWindow(Screen):
 
         return self.finalImg
 
+    def configureBackButton(self):
+        self.backBtn = Button(
+            text="Choose Another",
+            size_hint = (0.3, 0.1),
+            pos_hint = {"bottom":1 , "left":1 },
+            on_release=self.chooseAnotherImage
+        )
+
+        return self.backBtn
+
+    def configureSaveButton(self):
+        self.saveBtn = Button(
+            text="Save As...",
+            size_hint = (0.3, 0.1),
+            pos_hint={"right": 1, "bottom": 1}
+        )
+        
+        return self.saveBtn
+
+    def configureRefresh(self):
+        self.refreshBtn = Button(
+            text="Refresh",
+            size_hint=(0.5, 0.1),
+            pos_hint={"x":0.25 , "bottom":1 },
+            on_release = self.refreshImages
+        )
+
+        return self.refreshBtn
+
+    def refreshImages(self, instance):
+        self.cyanImg.source = "cyan_values.png"
+        self.yellowImg.source = "yellow_values.png"
+        self.magentaImg.source = "magenta_values.png"
+        self.keyImg.source = "key_values.png"
+        self.finalImg.source = "Final_IMG.png"
+
+      
+
+    def chooseAnotherImage(self, instance):
+        self.manager.current = "main_window"
 

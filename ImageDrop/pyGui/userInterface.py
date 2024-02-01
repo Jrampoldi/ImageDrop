@@ -1,6 +1,6 @@
 import kivy
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from screenConfig import *
 
 class ShowScreen(ScreenManager):
@@ -16,5 +16,5 @@ class MyApp(App):
     def build(self):
         self.title = "ImageDrop" 
         self.orientation = "vertical"
-        return ShowScreen() 
+        return ShowScreen(transition=NoTransition()) 
 
