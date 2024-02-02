@@ -1,5 +1,6 @@
 import os
 import ctypes
+import shutil
 from ctypes.util import find_library
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.widget import Widget
@@ -12,6 +13,7 @@ from kivy.clock import Clock
 
 
 lib = ctypes.CDLL("./ImageDrop.so")
+
 
 class MainWindow(Screen):
 
@@ -29,6 +31,7 @@ class MainWindow(Screen):
     def on_leave(self):
         self.remove_widget(self.img)
         self.remove_widget(self.file_chooser)
+        self.remove_widget(self.lbl)
         self.calls += 1
 
     def configureButtonOne(self):
@@ -36,7 +39,6 @@ class MainWindow(Screen):
             text="Process Image",
             size_hint=(0.25, 0.1),
             pos_hint={"x": 0, "y": 0},
-            color = (245/255, 245/255, 245/255, 0.8),
             on_press=self.process_file
         )
         return self.btn
@@ -46,7 +48,6 @@ class MainWindow(Screen):
             text="Select Image",
             size_hint = (0.25, 0.1),
             pos_hint={"right": 1, "bottom": 1},
-            color = (245/255, 245/255, 245/255, 0.8),
             on_press=self.open_file_chooser
         )
         return self.btn
@@ -87,9 +88,9 @@ class MainWindow(Screen):
     def open_file_chooser(self, instance):
         self.file_chooser = FileChooserIconView(
                             on_submit=self.get_path,
-                            path = os.path.expanduser("~/")
+                            path = os.path.expanduser("~/"),
                             )
-        self.remove_widget(self.lbl)
+        self.lbl.text=""
         self.add_widget(self.file_chooser)
 
     def process_file(self, instance):
@@ -107,6 +108,7 @@ class ResultsWindow(Screen):
         self.calls = 0
 
     def on_enter(self):
+        self.add_widget(self.configureBackLabel())
         self.add_widget(self.generateCyanImage())
         self.add_widget(self.generateYellowImage())
         self.add_widget(self.generateMagentaImage())
@@ -132,6 +134,21 @@ class ResultsWindow(Screen):
         self.remove_widget(self.saveBtn)
         self.calls += 1
 
+    def configureBackLabel(self):
+        self.lbl = Label()
+        with self.lbl.canvas.before:
+            Color(25/255, 25/255, 25/255, mode="rgba")
+            self.lbl.rect = Rectangle(size=self.lbl.size, pos=self.lbl.pos)
+
+        #correct the size of rect
+        self.lbl.bind(size=self.update_rect, pos=self.update_rect)
+
+        return self.lbl
+
+    def update_rect(self, instance, value):
+        instance.rect.size = instance.size
+        instance.rect.pos = instance.pos
+ 
 
     def generateCyanImage(self):
         self.cyanImg = Image(
@@ -187,7 +204,8 @@ class ResultsWindow(Screen):
         self.saveBtn = Button(
             text="Save As...",
             size_hint = (0.3, 0.1),
-            pos_hint={"right": 1, "bottom": 1}
+            pos_hint={"right": 1, "bottom": 1},
+            on_release=self.selectSave
         )
         
         return self.saveBtn
@@ -196,3 +214,38 @@ class ResultsWindow(Screen):
     def chooseAnotherImage(self, instance):
         self.manager.current = "main_window"
 
+    def selectSave(self, instance):
+        self.file_chooser = FileChooserIconView(
+                            path = os.path.expanduser("~/")
+                            )
+        self.file_chooser.bind(on_selection=self.get_path)      
+        self.remove_widget(self.cyanImg)
+        self.remove_widget(self.yellowImg)
+        self.remove_widget(self.magentaImg)
+        self.remove_widget(self.keyImg)
+        self.remove_widget(self.finalImg)
+        self.remove_widget(self.saveBtn)
+        self.remove_widget(self.backBtn)
+        self.add_widget(self.file_chooser)
+        self.add_widget(self.configureSelectPathButton())
+
+    def get_path(self, instance):
+        shutil.move(f"cyan_values{self.calls}.png", self.file_chooser.path)
+        shutil.move(f"yellow_values{self.calls}.png", self.file_chooser.path)
+        shutil.move(f"magenta_values{self.calls}.png", self.file_chooser.path)
+        shutil.move(f"key_values{self.calls}.png",self.file_chooser.path)
+        shutil.move(f"Final_IMG{self.calls}.png", self.file_chooser.path)
+        self.remove_widget(self.file_chooser)
+        self.remove_widget(self.pathBtn)
+        self.manager.current = "main_window"
+
+
+    def configureSelectPathButton(self):
+        self.pathBtn = Button(
+            text="Save...",
+            on_release=self.get_path,
+            size_hint = (0.4, 0.05),
+            pos_hint = {"bottom": 1, "x": 0.3}
+        )
+        
+        return self.pathBtn

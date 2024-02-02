@@ -1,6 +1,7 @@
 #include "Image.h"
 #include <stdio.h>
 #include <string>
+#include <cstdlib>
 
 using namespace std;
 
@@ -29,6 +30,9 @@ extern "C"{
 			cyan.cyanHalftoneIntensity(16);
 			img.convertToCMYKHalftone(cyan, magenta, yellow, key);
 		
+			const char* rmFiles = "rm *.png";
+			system(rmFiles);
+
 			/*Write buffers*/
 			char keyFile[50];
 			char yellowFile[50];

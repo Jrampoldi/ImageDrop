@@ -12,6 +12,7 @@ enum ImageType{
 };
 
 struct Image{
+
 	uint8_t* data = NULL;
 	size_t size = 0;
 	int w;
@@ -37,10 +38,6 @@ struct Image{
 	ImageType getFileType(const char* filename);
 	
 	Image& grayscale_avg();
-	Image& grayscale_lum();
-Image& dither();
-	Image& averageGroupOfPixels(int threshold);
-	Image& halftone(int dotSize);
 	Image& cyanHalftoneIntensity(int resolution);
 	Image& magentaHalftoneIntensity(int resolution);
 	Image& yellowHalftoneIntensity(int resolution);
@@ -48,9 +45,7 @@ Image& dither();
 	Image& convertToCMYKHalftone(const Image& cyan, const Image& magenta,
 									const Image& yellow, const Image& key);
 
-	Image& convertToCYMK(int resolution);
 	bool isInCircle(int x1, int x2, int y1, int y2, float radius);	
-	void checkPercentage(int loadValue);
 	int index(int x, int y);
 };
 
