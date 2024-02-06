@@ -136,14 +136,13 @@ Image& Image::cyanHalftoneIntensity(int resolution){
 				cyan = 0.0;
 			}
 
-			if (cyan < CMYK_THRESHOLD){cyan = 0;}
 
 			float radius = ((int)((cyan/100.0) * (float)resolution)) % resolution;
 
 			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
 				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
 					if (index(c_x, c_y) > size || index(c_x, c_y) < 0){continue;}
-					if  (isInCircle(c_x, x, c_y, y, (radius * WHITE_SPACE_MULTIPLIER))){
+					if  (isInCircle(c_x, x, c_y, y, radius)){
 						data[index(c_x, c_y)] =  CYAN[0];
 						data[index(c_x, c_y) + 1] = CYAN[1];
 						data[index(c_x, c_y) + 2] = CYAN[2];
@@ -199,14 +198,13 @@ Image& Image::magentaHalftoneIntensity(int resolution){
 				magenta = 0.0;
 			}		
 
-			if (magenta < CMYK_THRESHOLD){magenta = 0.0;}
 
 			float radius = ((int)((magenta/100.0) * (float)resolution)) % resolution;
 
 			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
 				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
 					if (index(c_x, c_y) > size || index(c_x, c_y) < 0){continue;}				
-					if  (isInCircle(c_x, x, c_y, y, (radius * WHITE_SPACE_MULTIPLIER))){
+					if  (isInCircle(c_x, x, c_y, y, radius)){
 						data[index(c_x, c_y)] =  MAGENTA[0];
 						data[index(c_x, c_y) + 1] = MAGENTA[1];
 						data[index(c_x, c_y) + 2] = MAGENTA[2];
@@ -261,15 +259,13 @@ Image& Image::yellowHalftoneIntensity(int resolution){
 				yellow = 0.0;
 			}
 		
-			/*Filter lower values out*/
-			if (yellow < CMYK_THRESHOLD){yellow = 0;}
 
 			float radius = ((int)((yellow/100.0) * (float)resolution)) % resolution;
 
 			for(int c_y = (y - (resolution/2)); c_y < (y + (resolution/2));c_y++){
 				for(int c_x = (x - (resolution/2)); c_x < (x + (resolution/2)); c_x++){
 					if (index(c_x, c_y) > size || index(c_x, c_y) < 0){continue;}
-					if  (isInCircle(c_x, (x), c_y, (y), (radius * WHITE_SPACE_MULTIPLIER))){
+					if  (isInCircle(c_x, x, c_y, y, radius)){
 						data[index(c_x, c_y)] =  YELLOW[0];
 						data[index(c_x, c_y) + 1] = YELLOW[1];
 						data[index(c_x, c_y) + 2] = YELLOW[2];
@@ -316,10 +312,9 @@ Image& Image::keyHalftoneIntensity(int resolution){
 
 
 			float radius = ((int)((key/100.0) * (float)resolution)) % resolution;
-			if (key < CMYK_THRESHOLD){radius = 0;}			
 			for(int c_y = (y-(resolution/2)); c_y < (y + (resolution/2));c_y++){
 				for(int c_x = (x-(resolution/2)); c_x < (x + (resolution/2)); c_x++){
-					if  (isInCircle(c_x, x, c_y, y, (radius * WHITE_SPACE_MULTIPLIER))){
+					if  (isInCircle(c_x, x, c_y, y, radius)){
 						data[index(c_x, c_y)] =  BLACK[0];
 						data[index(c_x, c_y) + 1] = BLACK[1];
 						data[index(c_x, c_y) + 2] = BLACK[2];
