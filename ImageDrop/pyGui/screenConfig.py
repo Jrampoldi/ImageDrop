@@ -21,8 +21,9 @@ from functools import partial
  """
 
 ####### Global Constants #######
-BGCOLOR = [35/255, 35/255, 40/255]
+BGCOLOR = [35/255, 35/255, 35/255]
 BTNSIZE = (0.2, 0.05)
+BTNCOLOR = [183/255, 147/255, 155/255]
 
 lib = ctypes.CDLL("./ImageDrop.so")
 
@@ -53,24 +54,26 @@ class MainWindow(Screen):
 
 ####### Configure Main Buttons Start #######
     def configureButtonOne(self):
-        self.btn = Button(
+        self.btnOne = Button(
             text="Process Image",
             size_hint=BTNSIZE,
+            background_color = (BTNCOLOR[0], BTNCOLOR[1], BTNCOLOR[2], 1),
             pos_hint={"x": 0, "y": 0},
             on_press=self.process_file
         )
 
-        return self.btn
+        return self.btnOne
 
     def configureButtonTwo(self):
-        self.btn = Button(
+        self.btnTwo = Button(
             text="Select Image",
             size_hint = BTNSIZE,
+            background_color = (BTNCOLOR[0], BTNCOLOR[1], BTNCOLOR[2], 1),
             pos_hint={"right": 1, "bottom": 1},
             on_press=self.open_file_chooser
         )
 
-        return self.btn
+        return self.btnTwo
 
 ####### Configure Main Buttons End #######
 
@@ -115,6 +118,13 @@ class MainWindow(Screen):
 
     
     def open_file_chooser(self, instance):
+        self.remove_widget(self.lbl)
+        self.remove_widget(self.btnOne)
+        self.remove_widget(self.btnTwo)
+
+        self.add_widget(self.configureLabel())
+        self.add_widget(self.configureButtonOne())
+        self.add_widget(self.configureButtonTwo())
         self.file_chooser = FileChooserIconView(
                             on_submit=self.getPath,
                             path = os.path.expanduser("~/"),
@@ -238,6 +248,7 @@ class ResultsWindow(Screen):
             text="Choose Another",
             size_hint = BTNSIZE,
             pos_hint = {"bottom":1 , "left":1 },
+            background_color = (BTNCOLOR[0], BTNCOLOR[1], BTNCOLOR[2], 1),
             on_release=self.chooseAnotherImage
         )
 
@@ -247,6 +258,7 @@ class ResultsWindow(Screen):
         self.saveBtn = Button(
             text="Save As...",
             size_hint = BTNSIZE,
+            background_color = (BTNCOLOR[0], BTNCOLOR[1], BTNCOLOR[2], 1),
             pos_hint={"right": 1, "bottom": 1},
             on_release=self.selectSave
         )
@@ -257,8 +269,9 @@ class ResultsWindow(Screen):
         self.pathBtn = Button(
             text="Save...",
             on_release=self.get_path,
+            background_color = (BTNCOLOR[0], BTNCOLOR[1], BTNCOLOR[2], 1),
             size_hint = BTNSIZE,
-            pos_hint = {"bottom": 1, "x": 0.5}
+            pos_hint = {"bottom": 1, "right": 1}
         )
         
         return self.pathBtn
@@ -267,7 +280,8 @@ class ResultsWindow(Screen):
         self.chooseEXT = Button(
             text=".png",
             size_hint=BTNSIZE,
-            pos_hint={"x":0.3, "Bottom":1},
+            background_color = (BTNCOLOR[0], BTNCOLOR[1], BTNCOLOR[2], 1),
+            pos_hint={"x":0.6, "Bottom":1},
             on_release=self.extensionOptions
         )
         
@@ -322,8 +336,8 @@ class ResultsWindow(Screen):
 
     def configureNameFile(self):
         self.txtBx = TextInput(
-            size_hint = (0.3, 0.05),
-            pos_hint = {"x": 0, "y": 0},
+            size_hint = (0.5, 0.05),
+            pos_hint = {"x": 0.2, "y": 0},
             multiline=False
         )        
 
@@ -351,7 +365,7 @@ class ResultsWindow(Screen):
             title="Choose file type...",
             size_hint = (None, None),
             size = (200, 300),
-            pos_hint = {"x":0.3, "y":0.05},
+            pos_hint = {"x":0.6, "y":0.05},
             content = self.buildPopUp()
         )
 
